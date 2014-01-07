@@ -41,7 +41,7 @@ angular.module('ui.bootstrap.transition', [])
       //If browser does not support transitions, instantly resolve
       if ( !endEventName ) {
         deferred.resolve(element);
-      }
+      }case
     });
 
     // Add our custom cancel function to the promise that is returned
@@ -2073,6 +2073,30 @@ angular.module( 'ui.bootstrap.tooltip', [ 'ui.bootstrap.position', 'ui.bootstrap
                 ttPosition = {
                   top: position.top + position.height / 2 - ttHeight / 2,
                   left: position.left - ttWidth
+                };
+                break;
+              case 'bottom-right':
+                ttPosition = {
+                  top: position.top + position.height,
+                  left: position.left - position.width / 2
+                };
+                break;
+              case 'bottom-left':
+                ttPosition = {
+                  top: position.top + position.height,
+                  left: position.left + position.width * 2 - position.width / 2 - ttWidth
+                };
+                break;
+              case 'top-right':
+                ttPosition = {
+                  top: position.top - ttHeight,
+                  left: position.left - position.width / 2
+                };
+                break;
+              case 'top-left':
+                ttPosition = {
+                  top: position.top - ttHeight,
+                  left: position.left + position.width * 2 - position.width / 2 - ttWidth
                 };
                 break;
               default:
