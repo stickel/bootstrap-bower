@@ -2074,6 +2074,30 @@ angular.module( 'ui.bootstrap.tooltip', [ 'ui.bootstrap.position', 'ui.bootstrap
                   left: position.left - ttWidth
                 };
                 break;
+              case 'bottom-right':
+                ttPosition = {
+                  top: position.top + position.height,
+                  left: position.left - position.width / 2
+                };
+                break;
+              case 'bottom-left':
+                ttPosition = {
+                  top: position.top + position.height,
+                  left: position.left + position.width * 2 - position.width / 2 - ttWidth
+                };
+                break;
+              case 'top-right':
+                ttPosition = {
+                  top: position.top - ttHeight,
+                  left: position.left - position.width / 2
+                };
+                break;
+              case 'top-left':
+                ttPosition = {
+                  top: position.top - ttHeight,
+                  left: position.left + position.width * 2 - position.width / 2 - ttWidth
+                };
+                break;
               default:
                 ttPosition = {
                   top: position.top - ttHeight,
