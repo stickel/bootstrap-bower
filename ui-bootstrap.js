@@ -2052,6 +2052,15 @@ angular.module( 'ui.bootstrap.tooltip', [ 'ui.bootstrap.position', 'ui.bootstrap
             // Get the height and width of the tooltip so we can center it.
             ttWidth = tooltip.prop( 'offsetWidth' );
             ttHeight = tooltip.prop( 'offsetHeight' );
+            
+            //Lets make sure we do not go beyond the left edge of window
+            var calcLeftPos = function() {
+              var lhs = (position.left - position.width / 2)
+              if(lhs < 0) {
+                lhs = -4; //0 - half the width of the tooltip arrow
+              } 
+              return lhs;
+            }
 
             // Calculate the tooltip's top and left coordinates to center it with
             // this directive.
@@ -2077,7 +2086,7 @@ angular.module( 'ui.bootstrap.tooltip', [ 'ui.bootstrap.position', 'ui.bootstrap
               case 'bottom-right':
                 ttPosition = {
                   top: position.top + position.height,
-                  left: position.left - position.width / 2
+                  left: calcLeftPos()
                 };
                 break;
               case 'bottom-left':
@@ -2089,7 +2098,7 @@ angular.module( 'ui.bootstrap.tooltip', [ 'ui.bootstrap.position', 'ui.bootstrap
               case 'top-right':
                 ttPosition = {
                   top: position.top - ttHeight,
-                  left: position.left - position.width / 2
+                  left: calcLeftPos()
                 };
                 break;
               case 'top-left':
