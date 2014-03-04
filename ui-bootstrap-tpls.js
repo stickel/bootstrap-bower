@@ -41,7 +41,7 @@ angular.module('ui.bootstrap.transition', [])
       //If browser does not support transitions, instantly resolve
       if ( !endEventName ) {
         deferred.resolve(element);
-      }case
+      }
     });
 
     // Add our custom cancel function to the promise that is returned
