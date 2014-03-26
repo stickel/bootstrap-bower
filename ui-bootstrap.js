@@ -1337,6 +1337,31 @@ angular.module('ui.bootstrap.dropdownToggle', []).directive('dropdownToggle', ['
         if (!elementWasOpen && !element.hasClass('disabled') && !element.prop('disabled')) {
           element.parent().addClass('open');
           openElement = element;
+          menu = element.parent().find('[role="menu"]');
+          focusOnArrow = function (event) {
+            var menuItems = menu.find('li:visible a');
+            if (!menuItems.length) {
+              // If there are no children, return gracefully
+              return;
+            }
+
+            var index = menuItems.index(menuItems.filter(':focus'));
+            // up arrow key pressed, move focus up one item
+            if (event.which === 38 && index > 0) {
+              index -= 1;
+            }
+            // down arrow key pressed, move focus down one item
+            if (event.which === 40 && index < menuItems.length - 1) {
+              index += 1;
+            }
+            // index is -1, set it to 0
+            if (!~index) {
+              index = 0;
+            }
+
+            menuItems.eq(index).trigger('focus');
+          };
+
           closeMenu = function (event) {
             if (event) {
               event.preventDefault();
@@ -1344,6 +1369,7 @@ angular.module('ui.bootstrap.dropdownToggle', []).directive('dropdownToggle', ['
             }
             $document.unbind('click', closeMenu);
             $document.unbind('keydown', escapeKeyBind);
+            $document.unbind('keydown', focusOnArrow);
             element.parent().removeClass('open');
             closeMenu = angular.noop;
             openElement = null;
@@ -1352,9 +1378,13 @@ angular.module('ui.bootstrap.dropdownToggle', []).directive('dropdownToggle', ['
             if (event.which === 27) {
               closeMenu();
             }
-          };
+          }
+
           $document.bind('click', closeMenu);
+          // Close dropdown menu when `esc` key is pressed
           $document.bind('keydown', escapeKeyBind);
+          // Set `:focus` when the up/down arrow keys are pressed
+          $document.bind('keydown', focusOnArrow);
         }
       });
     }
