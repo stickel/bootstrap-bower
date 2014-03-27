@@ -1337,7 +1337,8 @@ angular.module('ui.bootstrap.dropdownToggle', []).directive('dropdownToggle', ['
         if (!elementWasOpen && !element.hasClass('disabled') && !element.prop('disabled')) {
           element.parent().addClass('open');
           openElement = element;
-          menu = element.parent().find('[role="menu"]');
+          // returns the first menu item and stops traversing the rest of the dom
+          menu = element.parent().find('[role="menu"]:first');
           focusOnArrow = function (event) {
             var menuItems = menu.find('li:visible a');
             if (!menuItems.length) {
