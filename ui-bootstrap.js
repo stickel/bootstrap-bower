@@ -1317,7 +1317,13 @@ function ($compile, $parse, $document, $position, dateFilter, datepickerPopupCon
 
 angular.module('ui.bootstrap.dropdownToggle', []).directive('dropdownToggle', ['$document', '$location', function ($document, $location) {
   var openElement = null,
-      closeMenu   = angular.noop;
+      closeMenu   = angular.noop,
+      key = {
+        UP: 38,
+        DOWN: 40,
+        ESC: 27,
+        ENTER: 13
+      };
   return {
     restrict: 'CA',
     link: function(scope, element, attrs) {
@@ -1338,21 +1344,42 @@ angular.module('ui.bootstrap.dropdownToggle', []).directive('dropdownToggle', ['
           element.parent().addClass('open');
           openElement = element;
           // returns the first menu item and stops traversing the rest of the dom
-          menu = element.parent().find('[role="menu"]:first');
+          var menu = element.parent().find('[role="menu"]:first'),
+              menuItems = menu.find('li:visible a');
+
+          keyboardNavigation = function (event) {
+            event.stopImmediatePropagation();
+            switch (event.which) {
+              case key.ESC:
+                closeMenu();
+                break;
+              case key.UP:
+                focusOnArrow(event);
+                break;
+              case key.DOWN:
+                focusOnArrow(event);
+                break;
+              case key.ENTER:
+                doSelect(event);
+                break;
+            }
+          };
           focusOnArrow = function (event) {
-            var menuItems = menu.find('li:visible a');
             if (!menuItems.length) {
               // If there are no children, return gracefully
               return;
             }
 
-            var index = menuItems.index(menuItems.filter(':focus'));
+            var index = menuItems.index(menuItems.filter('.selected')),
+                prevIndex = 0;
             // up arrow key pressed, move focus up one item
-            if (event.which === 38 && index > 0) {
+            if (event.which === key.UP && index > 0) {
+              prevIndex = index;
               index -= 1;
             }
             // down arrow key pressed, move focus down one item
-            if (event.which === 40 && index < menuItems.length - 1) {
+            if (event.which === key.DOWN && index < menuItems.length - 1) {
+              prevIndex = index;
               index += 1;
             }
             // index is -1, set it to 0
@@ -1360,32 +1387,46 @@ angular.module('ui.bootstrap.dropdownToggle', []).directive('dropdownToggle', ['
               index = 0;
             }
 
-            menuItems.eq(index).trigger('focus');
+            menuItems.eq(prevIndex).removeClass('selected');
+            menuItems.eq(index).addClass('selected');
           };
-
+          doSelect = function (event) {
+            event.stopImmediatePropagation();
+            var selectedItem = menuItems.filter('.selected');
+            if (selectedItem.length >= 1) {
+              scope.$emit('ui-bootstrap.dropdownItemSelected', {event:event, item:selectedItem[0]});
+            } else {
+              scope.$emit('ui-bootstrap.dropdownInputSelected', {event:event, target:event.target});
+            }
+          };
           closeMenu = function (event) {
             if (event) {
               event.preventDefault();
               event.stopPropagation();
             }
             $document.unbind('click', closeMenu);
-            $document.unbind('keydown', escapeKeyBind);
-            $document.unbind('keydown', focusOnArrow);
+            $document.unbind('keyup', keyboardNavigation);
+            element.unbind('input');
+            menu.unbind('mouseover');
             element.parent().removeClass('open');
+            element.parent().find('[role="menu"] li:visible a.selected').removeClass('selected');
             closeMenu = angular.noop;
             openElement = null;
           };
           escapeKeyBind = function (event) {
-            if (event.which === 27) {
+            if (event.which === key.ESC) {
               closeMenu();
             }
-          }
+          };
 
           $document.bind('click', closeMenu);
-          // Close dropdown menu when `esc` key is pressed
-          $document.bind('keydown', escapeKeyBind);
-          // Set `:focus` when the up/down arrow keys are pressed
-          $document.bind('keydown', focusOnArrow);
+          $document.bind('keyup', keyboardNavigation);
+          menu.bind('mouseover', function() {
+            menuItems.filter('.selected').removeClass('selected');
+          });
+          element.bind('input', function() {
+            menuItems.filter('.selected').removeClass('selected');
+          });
         }
       });
     }
