@@ -1396,7 +1396,7 @@ angular.module('ui.bootstrap.dropdownToggle', []).directive('dropdownToggle', ['
             if (selectedItem.length >= 1) {
               scope.$emit('ui-bootstrap.dropdownItemSelected', {event:event, item:selectedItem[0]});
             } else {
-              scope.$emit('ui-bootstrap.dropdownInputSelected', {event:event, target:event.target});
+              scope.$emit('ui-bootstrap.dropdownInputSelected', {event:event, target:event.target, value:event.target.value});
             }
           };
           closeMenu = function (event) {
